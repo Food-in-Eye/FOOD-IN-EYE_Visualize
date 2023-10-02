@@ -1,7 +1,9 @@
+import GazeVisualization from "./components/GazeVisualization.module";
+
 function App() {
   return (
     <div className="App">
-      <header className="App-header"></header>
+      <GazeVisualization />
     </div>
   );
 }

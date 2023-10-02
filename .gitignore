@@ -11,13 +11,37 @@
 # production
 /build
 
+# editor related files
+.vscode/
+*.swp
+.idea/
+*.sublime-project
+*.sublime-workspace
+
 # misc
 .DS_Store
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# IDE specific files
+/.idea
+/.vscode
+*.code-workspace
+
+# mac-specific files
+.AppleDouble
+.LSOverride
+
+# exe
+/src/data
+
+
+
+
+

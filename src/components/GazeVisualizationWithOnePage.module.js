@@ -8,59 +8,55 @@ class GazeVisualization extends Component {
       currentPage: 0,
     };
     this.canvasRefs = fixationData.map(() => React.createRef());
-    this.animationFrameId = null;
+    this.animationFrameId = null; // requestAnimationFrame의 ID를 저장하기 위한 변수
   }
 
   componentDidMount() {
-    console.log(fixationData);
+    // Canvas 요소의 렌더링을 기다립니다.
     this.animationFrameId = requestAnimationFrame(() => {
       this.drawFixations();
     });
   }
 
   componentWillUnmount() {
+    // 컴포넌트가 언마운트될 때 requestAnimationFrame을 정리합니다.
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
     }
   }
 
+  clearCanvas(canvas) {
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
   drawFixations() {
     const { currentPage } = this.state;
-    const canvas = this.canvasRefs[currentPage].current; // 현재 페이지의 Canvas 참조 가져오기
+    const canvas = this.canvasRefs[currentPage].current;
 
-    /**canvas가 null일때 아직 랜더링되지 않았으므로 재시도한다. */
     if (!canvas) {
+      // Canvas가 null이면 아직 렌더링되지 않았으므로 재시도합니다.
       this.animationFrameId = requestAnimationFrame(() => {
         this.drawFixations();
       });
       return;
     }
 
-    // const canvas = this.canvasRef.current;
     const ctx = canvas.getContext("2d");
     const { fixations } = fixationData[currentPage];
-    // const { fixations } = this.state;
-
     const screenAspectRatio = 1080 / 2195;
     const canvasWidth = canvas.width;
     const canvasHeight = canvasWidth / screenAspectRatio;
 
-    console.log(
-      "canvas, canvasWidth, canvasHeight",
-      canvas,
-      canvasWidth,
-      canvasHeight
-    );
-
-    // canvas.style.border = "1px solid #000";
+    canvas.style.border = "1px solid #000";
 
     const animateFixations = (fixationIndex) => {
-      console.log("fixations", fixations);
-
       if (fixationIndex >= fixations.length) {
-        /**현재 페이지의 모든 fixations를 그렸다면 다음 페이지로 넘어가기 */
         if (currentPage < fixationData.length - 1) {
+          // 현재 페이지의 Canvas를 비우고
+          this.clearCanvas(canvas);
           this.setState({ currentPage: currentPage + 1 }, () => {
+            // 다음 페이지로 이동한 후 다시 시각화합니다.
             this.animationFrameId = requestAnimationFrame(() => {
               this.drawFixations();
             });
@@ -72,23 +68,16 @@ class GazeVisualization extends Component {
       const fixation = fixations[fixationIndex];
       const { cx, cy, st, et, r } = fixation;
       const duration = et - st;
-      const interval = 500;
+      const interval = 1000;
 
       const animate = () => {
         const now = Date.now();
         const elapsed = now - st;
         const progress = Math.min(1, elapsed / duration);
 
-        console.log("Animating frame for fixation index", fixationIndex);
-        console.log("Now:", now);
-        console.log("Elapsed:", elapsed);
-        console.log("Progress:", progress);
-
-        /**화면 크기에 맞게 좌표 변환 */
         const x = (cx / 1080) * canvasWidth;
         const y = (cy / 2195) * canvasHeight;
 
-        /**원 그리기 */
         ctx.globalCompositeOperation = "source-over";
         ctx.beginPath();
         ctx.arc(x, y, r * progress, 0, 2 * Math.PI);
@@ -119,7 +108,7 @@ class GazeVisualization extends Component {
             ref={this.canvasRefs[index]}
             width={1080}
             height={2195}
-            style={{ border: "1px solid #000", margin: "10px" }}
+            style={{ border: "1px solid #000", marginRight: "10px" }}
           ></canvas>
         ))}
       </div>

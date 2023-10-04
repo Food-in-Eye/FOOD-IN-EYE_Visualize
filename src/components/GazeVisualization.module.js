@@ -36,10 +36,8 @@ class GazeVisualization extends Component {
       return;
     }
 
-    // const canvas = this.canvasRef.current;
     const ctx = canvas.getContext("2d");
     const { fixations } = fixationData[currentPage];
-    // const { fixations } = this.state;
 
     const screenAspectRatio = 1080 / 2195;
     const canvasWidth = canvas.width;
@@ -72,42 +70,79 @@ class GazeVisualization extends Component {
       const fixation = fixations[fixationIndex];
       const { cx, cy, st, et, r } = fixation;
       const duration = et - st;
-      const interval = 500;
+      const interval = 100;
 
-      const animate = () => {
-        const now = Date.now();
-        const elapsed = now - st;
-        const progress = Math.min(1, elapsed / duration);
+      const scaleFactor = 2;
+      const steps = 10;
+      const stepDuration = duration / steps;
 
-        console.log("Animating frame for fixation index", fixationIndex);
-        console.log("Now:", now);
-        console.log("Elapsed:", elapsed);
-        console.log("Progress:", progress);
+      let step = 0;
+      //   let currentRadius = 0;
 
-        /**화면 크기에 맞게 좌표 변환 */
+      const drawStep = () => {
+        if (step >= steps) {
+          setTimeout(() => {
+            animateFixations(fixationIndex + 1);
+          }, interval);
+          return;
+        }
+
+        const progress = step / steps;
+
         const x = (cx / 1080) * canvasWidth;
         const y = (cy / 2195) * canvasHeight;
 
         /**원 그리기 */
         ctx.globalCompositeOperation = "source-over";
         ctx.beginPath();
-        ctx.arc(x, y, r * progress, 0, 2 * Math.PI);
+        ctx.arc(x, y, r * progress * scaleFactor, 0, 2 * Math.PI);
         ctx.fillStyle = "blue";
         ctx.fill();
 
-        if (progress < 1) {
-          requestAnimationFrame(animate);
-        } else {
-          setTimeout(() => {
-            animateFixations(fixationIndex + 1);
-          }, interval);
-        }
+        step++;
+
+        setTimeout(drawStep, stepDuration);
       };
 
-      requestAnimationFrame(animate);
+      drawStep();
     };
 
     animateFixations(0);
+
+    //   const animate = () => {
+    //     const now = Date.now();
+    //     const elapsed = now - st;
+    //     const progress = Math.min(1, elapsed / duration);
+
+    //     console.log("Animating frame for fixation index", fixationIndex);
+    //     console.log("Now:", now);
+    //     console.log("Elapsed:", elapsed);
+    //     console.log("Progress:", progress);
+
+    //     /**화면 크기에 맞게 좌표 변환 */
+    //     const x = (cx / 1080) * canvasWidth;
+    //     const y = (cy / 2195) * canvasHeight;
+
+    //     /**원 그리기 */
+    //     ctx.globalCompositeOperation = "source-over";
+    //     ctx.beginPath();
+    //     ctx.arc(x, y, r * progress * scaleFactor, 0, 2 * Math.PI);
+    //     ctx.fillStyle = "blue";
+    //     ctx.fill();
+
+    //     if (progress < 1) {
+    //       requestAnimationFrame(animate);
+    //     } else {
+    //       setTimeout(() => {
+    //         animateFixations(fixationIndex + 1);
+    //       }, interval);
+    //     }
+    //   };
+
+    //   requestAnimationFrame(animate);
+    // };
+
+    // animateFixations(0);
   }
 
   render() {

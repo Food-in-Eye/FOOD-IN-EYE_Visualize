@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import fixationData from "../data/fixation_data.json";
+// import fixationData from "../data/fixation_data.json";
+import visualizationData from "../data/visualization_data.json";
 import GenerateImgUrl from "./GenerateImgUrl.module";
 
 class GazeVisualization extends Component {
@@ -10,16 +11,16 @@ class GazeVisualization extends Component {
       previousCenter: null,
       imgUrls: [],
     };
-    this.canvasRefs = fixationData.map(() => React.createRef());
+    this.canvasRefs = visualizationData.map(() => React.createRef());
     this.animationFrameId = null;
   }
 
   async componentDidMount() {
-    console.log(fixationData);
+    console.log(visualizationData);
 
     // 이미지 URL 가져오기
     const imgUrls = await Promise.all(
-      fixationData.map(async (page) => {
+      visualizationData.map(async (page) => {
         console.log("s_num, f_num", page.s_num, page.f_num);
         return await GenerateImgUrl(page.s_num, page.f_num);
       })
@@ -51,7 +52,7 @@ class GazeVisualization extends Component {
     }
 
     const ctx = canvas.getContext("2d");
-    const { fixations } = fixationData[currentPage];
+    const { fixations } = visualizationData[currentPage];
 
     const screenAspectRatio = 1080 / 2195;
     const canvasWidth = canvas.width;
@@ -78,7 +79,7 @@ class GazeVisualization extends Component {
 
       if (fixationIndex >= fixations.length) {
         /**현재 페이지의 모든 fixations를 그렸다면 다음 페이지로 넘어가기 */
-        if (currentPage < fixationData.length - 1) {
+        if (currentPage < visualizationData.length - 1) {
           this.setState(
             { currentPage: currentPage + 1, previousCenter: null },
             () => {
@@ -92,16 +93,18 @@ class GazeVisualization extends Component {
       }
 
       const fixation = fixations[fixationIndex];
-      const { cx, cy, st, et, r } = fixation;
-      const duration = et - st;
-      const interval = 100;
+      // const { cx, cy, st, et, r } = fixation;
+      const { x, y, d } = fixation;
+      // const duration = et - st;
 
-      const scaleFactor = 2;
-      const steps = 10;
-      const stepDuration = duration / steps;
+      const interval = 100; // 실제 속도
+
+      // const scaleFactor = 2;
+      const steps = parseInt(d / 100);
+      const stepDuration = d / steps;
 
       let step = 0;
-      //   let currentRadius = 0;
+      let currentRadius = 0;
 
       const drawStep = () => {
         if (step >= steps) {
@@ -121,9 +124,10 @@ class GazeVisualization extends Component {
 
         const progress = step / steps;
 
-        const x = (cx / 1080) * canvasWidth;
-        const y = (cy / 2195) * canvasHeight;
-        const radius = r * progress * scaleFactor;
+        const newX = (x / 1080) * canvasWidth;
+        const newY = (y / 2195) * canvasHeight;
+        const radius = 10 * step * progress;
+        // const radius = r * progress * scaleFactor;
 
         // ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -132,7 +136,7 @@ class GazeVisualization extends Component {
           ctx.globalCompositeOperation = "source-over";
           ctx.beginPath();
           ctx.moveTo(this.state.previousCenter.x, this.state.previousCenter.y);
-          ctx.lineTo(x, y);
+          ctx.lineTo(newX, newY);
           ctx.strokeStyle = "#d11507";
           ctx.stroke();
         }
@@ -140,14 +144,37 @@ class GazeVisualization extends Component {
         /**원 그리기 */
         ctx.globalAlpha = 0.5; // 투명도 50%
         ctx.globalCompositeOperation = "source-over";
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, 2 * Math.PI);
-        ctx.fillStyle = "#d11507";
-        ctx.fill();
-        ctx.strokeStyle = "#d11507";
-        ctx.stroke();
+        // ctx.beginPath();
+        if (step === 0) {
+          ctx.beginPath();
+          ctx.arc(newX, newY, radius, 0, 2 * Math.PI);
+          ctx.fillStyle = "#d11507";
+          ctx.fill();
+          // ctx.strokeStyle = "#d11507";
+          // ctx.stroke();
+        } else {
+          // ctx.clearRect(
+          //   newX - currentRadius,
+          //   newY - currentRadius,
+          //   currentRadius * 2,
+          //   currentRadius * 2
+          // );
+          ctx.beginPath();
+          ctx.arc(newX, newY, currentRadius, 0, 2 * Math.PI);
+          ctx.arc(newX, newY, currentRadius - 5, 0, 2 * Math.PI);
+          ctx.fillStyle = "rgba(209,21,7)";
+          ctx.fill();
+          // ctx.strokeStyle = "#d11507";
+          // ctx.stroke();
+        }
+        // ctx.arc(newX, newY, radius, 0, 2 * Math.PI);
+        // ctx.fillStyle = "#d11507";
+        // ctx.fill();
+        // ctx.strokeStyle = "#d11507";
+        // ctx.stroke();
 
         step++;
+        currentRadius += 10;
 
         setTimeout(drawStep, stepDuration);
       };
@@ -156,8 +183,8 @@ class GazeVisualization extends Component {
 
       this.setState({
         previousCenter: {
-          x: (cx / 1080) * canvasWidth,
-          y: (cy / 2195) * canvasHeight,
+          x: (x / 1080) * canvasWidth,
+          y: (y / 2195) * canvasHeight,
         },
       });
     };
@@ -166,11 +193,9 @@ class GazeVisualization extends Component {
   };
 
   render() {
-    const { imgUrls } = this.state;
-
     return (
       <div style={{ display: "flex", overflowX: "scroll" }}>
-        {fixationData.map((pageData, index) => (
+        {visualizationData.map((pageData, index) => (
           <canvas
             key={index}
             ref={this.canvasRefs[index]}
@@ -179,8 +204,6 @@ class GazeVisualization extends Component {
             style={{
               border: "1px solid #000",
               margin: "10px",
-              // backgroundImage: `url(${imgUrls[index]})`,
-              // backgroundSize: "cover",
             }}
           ></canvas>
         ))}

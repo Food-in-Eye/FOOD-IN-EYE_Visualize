@@ -1,10 +1,28 @@
+* {
+  margin: 0 auto;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+.total {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 5% 2% 0 2%;
+}
+
+.visualizeSec {
+  display: flex;
+  flex-direction: column;
+}
+
+.total h2 {
+  font-size: 50px;
+  text-align: center;
+}
+
 .canvasDiv {
   display: flex;
   /* flex-direction: column; */
   justify-content: center;
 }
-
-/* .canvasDiv span {
-  font-size: 24px;
-  font-weight: 700;
-} */

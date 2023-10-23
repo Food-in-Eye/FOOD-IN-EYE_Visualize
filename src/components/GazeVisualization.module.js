@@ -37,6 +37,18 @@ class GazeVisualization extends Component {
     }
   }
 
+  blurImage = (ctx, canvasWidth, canvasHeight) => {
+    ctx.filter = "blur(10px)"; // 블러 처리
+    ctx.drawImage(this.canvasRef.current, 0, 0, canvasWidth, canvasHeight);
+    ctx.filter = "none"; // 블러 처리 해제
+  };
+
+  drawNoFixationMessage = (ctx) => {
+    ctx.font = "50px Arial";
+    ctx.fillStyle = "blue";
+    ctx.fillText("시선 없는 페이지", 50, 50);
+  };
+
   drawCanvas = () => {
     const { currentPage, fixationsIndex } = this.state;
     const canvas = this.canvasRef.current;
@@ -65,14 +77,20 @@ class GazeVisualization extends Component {
             this.drawFixations(fixations, ctx, canvasWidth, canvasHeight);
           });
         } else {
+          this.blurImage(ctx, canvasWidth, canvasHeight);
+          this.drawNoFixationMessage(ctx);
           console.log("fixations가 없을 때1");
           setTimeout(this.moveToNextCanvas, 2000);
         }
       };
     } else {
       if (fixations.length > 0) {
-        this.drawFixations(fixations, ctx, canvasWidth, canvasHeight);
+        this.animationFrameId = requestAnimationFrame(() => {
+          this.drawFixations(fixations, ctx, canvasWidth, canvasHeight);
+        });
       } else {
+        this.blurImage(ctx, canvasWidth, canvasHeight);
+        this.drawNoFixationMessage(ctx);
         console.log("fixations가 없을 때2");
         setTimeout(this.moveToNextCanvas, 2000);
       }
@@ -168,16 +186,33 @@ class GazeVisualization extends Component {
 
   render() {
     return (
-      <div className={Style.canvasDiv}>
-        <canvas
-          ref={this.canvasRef}
-          width={1080}
-          height={2195}
-          style={{
-            border: "1px solid #000",
-            margin: "10px",
-          }}
-        ></canvas>
+      <div className={Style.total}>
+        <section className={Style.menus}>
+          <div>
+            <h2>내가 가장 많이 본 메뉴</h2>
+            <span></span>
+          </div>
+        </section>
+        <section className={Style.visualizeSec}>
+          <h2>주문 과정에서의 시선 흐름 과정</h2>
+          <div className={Style.canvasDiv}>
+            <canvas
+              ref={this.canvasRef}
+              width={1080}
+              height={2195}
+              style={{
+                border: "1px solid #000",
+                margin: "10px",
+              }}
+            ></canvas>
+          </div>
+        </section>
+        <section className={Style.receipt}>
+          <div>
+            <h2>주문 내역</h2>
+            <span></span>
+          </div>
+        </section>
       </div>
     );
   }

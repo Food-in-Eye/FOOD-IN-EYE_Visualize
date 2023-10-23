@@ -1,0 +1,10 @@
+.canvasDiv {
+  display: flex;
+  /* flex-direction: column; */
+  justify-content: center;
+}
+
+/* .canvasDiv span {
+  font-size: 24px;
+  font-weight: 700;
+} */

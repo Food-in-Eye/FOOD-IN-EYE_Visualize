@@ -37,17 +37,17 @@ class GazeVisualization extends Component {
     }
   }
 
-  blurImage = (ctx, canvasWidth, canvasHeight) => {
-    ctx.filter = "blur(10px)"; // 블러 처리
-    ctx.drawImage(this.canvasRef.current, 0, 0, canvasWidth, canvasHeight);
-    ctx.filter = "none"; // 블러 처리 해제
-  };
+  // blurImage = (ctx, canvasWidth, canvasHeight) => {
+  //   ctx.filter = "blur(10px)"; // 블러 처리
+  //   ctx.drawImage(this.canvasRef.current, 0, 0, canvasWidth, canvasHeight);
+  //   ctx.filter = "none"; // 블러 처리 해제
+  // };
 
-  drawNoFixationMessage = (ctx) => {
-    ctx.font = "50px Arial";
-    ctx.fillStyle = "blue";
-    ctx.fillText("시선 없는 페이지", 50, 50);
-  };
+  // drawNoFixationMessage = (ctx) => {
+  //   ctx.font = "50px Arial";
+  //   ctx.fillStyle = "blue";
+  //   ctx.fillText("시선 없는 페이지", 50, 50);
+  // };
 
   drawCanvas = () => {
     const { currentPage, fixationsIndex } = this.state;
@@ -77,8 +77,8 @@ class GazeVisualization extends Component {
             this.drawFixations(fixations, ctx, canvasWidth, canvasHeight);
           });
         } else {
-          this.blurImage(ctx, canvasWidth, canvasHeight);
-          this.drawNoFixationMessage(ctx);
+          // this.blurImage(ctx, canvasWidth, canvasHeight);
+          // this.drawNoFixationMessage(ctx);
           console.log("fixations가 없을 때1");
           setTimeout(this.moveToNextCanvas, 2000);
         }
@@ -89,8 +89,8 @@ class GazeVisualization extends Component {
           this.drawFixations(fixations, ctx, canvasWidth, canvasHeight);
         });
       } else {
-        this.blurImage(ctx, canvasWidth, canvasHeight);
-        this.drawNoFixationMessage(ctx);
+        // this.blurImage(ctx, canvasWidth, canvasHeight);
+        // this.drawNoFixationMessage(ctx);
         console.log("fixations가 없을 때2");
         setTimeout(this.moveToNextCanvas, 2000);
       }

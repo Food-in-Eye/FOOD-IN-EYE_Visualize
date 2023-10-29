@@ -187,12 +187,14 @@ class GazeVisualization extends Component {
   render() {
     return (
       <div className={Style.total}>
-        <section className={Style.menus}>
+        {/* <section className={Style.menus}>
           <div>
             <h2>내가 가장 많이 본 메뉴</h2>
-            <span></span>
+            <span>
+              <p1></p1>
+            </span>
           </div>
-        </section>
+        </section> */}
         <section className={Style.visualizeSec}>
           <h2>주문 과정에서의 시선 흐름 과정</h2>
           <div className={Style.canvasDiv}>
@@ -202,17 +204,17 @@ class GazeVisualization extends Component {
               height={2195}
               style={{
                 border: "1px solid #000",
-                margin: "10px",
+                margin: "0px 10px",
               }}
             ></canvas>
           </div>
         </section>
-        <section className={Style.receipt}>
+        {/* <section className={Style.receipt}>
           <div>
             <h2>주문 내역</h2>
             <span></span>
           </div>
-        </section>
+        </section> */}
       </div>
     );
   }

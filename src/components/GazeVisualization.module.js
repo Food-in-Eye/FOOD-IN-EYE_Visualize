@@ -2,6 +2,10 @@ import React, { Component } from "react";
 import visualizationData from "../data/visualization_data.json";
 import GenerateImgUrl from "./GenerateImgUrl.module";
 import Style from "../css/style.module.css";
+import top1 from "../images/top1.png";
+import top2 from "../images/top2.png";
+import top3 from "../images/top3.png";
+import receipt from "../images/receipt.png";
 
 class GazeVisualization extends Component {
   constructor(props) {
@@ -187,14 +191,45 @@ class GazeVisualization extends Component {
   render() {
     return (
       <div className={Style.total}>
-        {/* <section className={Style.menus}>
-          <div>
-            <h2>내가 가장 많이 본 메뉴</h2>
-            <span>
-              <p1></p1>
-            </span>
+        <section className={Style.menus}>
+          <div className={Style.simpleDashboard}>
+            <h2>&lt; 내가 가장 많이 본 메뉴 &gt;</h2>
+            <span></span>
+            <div className={Style.menusTOP3}>
+              <h2>&lt;오늘 사람들이 본 메뉴 중 &gt;</h2>
+              <section className={Style.TOP3_1}>
+                <h3>많이 봤는데 판매량이 적은 메뉴 TOP3</h3>
+                <div>
+                  <img src={top1} alt="1등" />
+                  <p>1</p>
+                </div>
+                <div>
+                  <img src={top2} alt="2등" />
+                  <p>1</p>
+                </div>
+                <div>
+                  <img src={top3} alt="3등" />
+                  <p>1</p>
+                </div>
+              </section>
+              <section className={Style.TOP3_2}>
+                <h3>적게 봤는데 판매량이 많은 메뉴 TOP3</h3>
+                <div>
+                  <img src={top1} alt="1등" />
+                  <p>1</p>
+                </div>
+                <div>
+                  <img src={top2} alt="2등" />
+                  <p>1</p>
+                </div>
+                <div>
+                  <img src={top3} alt="3등" />
+                  <p>1</p>
+                </div>
+              </section>
+            </div>
           </div>
-        </section> */}
+        </section>
         <section className={Style.visualizeSec}>
           <h2>주문 과정에서의 시선 흐름 과정</h2>
           <div className={Style.canvasDiv}>
@@ -209,12 +244,27 @@ class GazeVisualization extends Component {
             ></canvas>
           </div>
         </section>
-        {/* <section className={Style.receipt}>
-          <div>
-            <h2>주문 내역</h2>
-            <span></span>
+        <section className={Style.receipt}>
+          <h2>주문 내역</h2>
+          <div className={Style.receiptWhole}>
+            <img src={receipt} alt="주문 내역" />
+            <div className={Style.receiptBody}>
+              <span>주문 일시: </span>
+              <hr />
+              <div className={Style.receiptInfo}>
+                <section>
+                  <span>상품명 </span>
+                </section>
+                <section>
+                  <span>수량 </span>
+                </section>
+                <section>
+                  <span>가격 </span>
+                </section>
+              </div>
+            </div>
           </div>
-        </section> */}
+        </section>
       </div>
     );
   }

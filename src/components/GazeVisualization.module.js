@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 // import visualizationData from "../data/visualization_data.json";
 import GenerateImgUrl from "./GenerateImgUrl.module";
 import Style from "../css/style.module.css";
@@ -13,7 +13,7 @@ function GazeVisualization() {
   const location = useLocation();
   const { value } = location?.state || {};
 
-  // console.log(value);
+  console.log(value);
 
   const [currentPage, setCurrentPage] = useState(0);
   const [previousCenter, setPreviousCenter] = useState(null);
@@ -31,119 +31,45 @@ function GazeVisualization() {
   const canvasRef = useRef(null);
   const animationFrameId = useRef(null);
 
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {
-  //     currentPage: 0,
-  //     previousCenter: null,
-  //     imgUrls: [],
-  //     fixationsIndex: 0,
-  //     leftData: [],
-  //     rightData: [],
-  //     personalData: [],
-  //     fixKey: "",
-  //     visualizationData: [],
-  //     leftTOP3: [],
-  //     rightTOP3: [],
-  //     personalTOP3: [],
-  //   };
-  //   this.canvasRef = React.createRef();
-  //   this.animationFrameId = null;
-  // }
+  let ctx, canvasWidth, canvasHeight;
 
-  useEffect(() => {
-    // const { value } = this.props;
-    // const { location } = this.context.router.route;
-    // const hID = location.state?.value;
-    // const { value: hID } = useParams();
-    // console.log("hID", hID);
-
-    const fetchData = async () => {
-      try {
-        const res = await getHistory(value);
-        const leftData = Object.values(res.data.left);
-        const rightData = Object.values(res.data.right);
-        const personalData = Object.values(res.data.personal);
-        const fixKey = res.data.fix_key;
-
-        const newLeftTOP3 = [];
-        leftData.forEach((item) => {
-          for (const key in item.top3) {
-            if (item.top3.hasOwnProperty(key)) {
-              const [s_num, f_num] = key.split("-");
-              const receivedData = getInfos(s_num, f_num);
-              console.log("receivedData", receivedData);
-              newLeftTOP3.push(receivedData);
-            }
-          }
-        });
-
-        const visualizeData = await getFixKey(fixKey);
-
-        console.log("visualizeData", visualizeData);
-
-        const imgUrls = await Promise.all(
-          visualizeData.data.map(async (page) => {
-            return await GenerateImgUrl(page.s_num, page.f_num);
-          })
-        );
-
-        setImgUrls(imgUrls);
-        setVisualizationData(visualizeData.data);
-        setLeftTOP3(newLeftTOP3);
-
-        animationFrameId.current = requestAnimationFrame(() => {
-          drawCanvas();
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchData();
-
-    return () => {
-      if (animationFrameId.current) {
-        cancelAnimationFrame(animationFrameId.current);
-      }
-    };
-  }, [value]);
-
-  // componentWillUnmount() {
-  //   if (this.animationFrameId) {
-  //     cancelAnimationFrame(this.animationFrameId);
-  //   }
-  // }
-
-  const drawCanvas = () => {
+  const drawCanvas = useCallback(() => {
     // const { currentPage, fixationsIndex } = this.state;
+    console.log("currentPage", currentPage);
     const canvas = canvasRef.current;
     const fixations = visualizationData[currentPage]?.fixations;
     const imgSrc = imgUrls[currentPage];
 
-    if (!canvas || !fixations || !imgSrc) {
+    if (!canvas) {
       animationFrameId.current = requestAnimationFrame(() => {
         drawCanvas();
       });
       return;
     }
 
-    const ctx = canvas.getContext("2d");
+    ctx = canvas.getContext("2d");
+
+    // ctx.clearRect(0, 0, canvas.width, canvas.height);
     // console.log("visualizationData", visualizationData[currentPage]);
 
     // console.log("fixations", fixations);
     const screenAspectRatio = 1080 / 2195;
-    const canvasWidth = canvas.width;
-    const canvasHeight = canvasWidth / screenAspectRatio;
+    canvasWidth = canvas.width;
+    canvasHeight = canvasWidth / screenAspectRatio;
 
     ctx.globalAlpha = 1;
     if (fixationsIndex === 0) {
+      console.log("1. get background image");
       const img = new Image();
       img.src = imgSrc;
       img.onload = () => {
         ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
+        console.log("2. draw img");
+        // console.log("이미지 그리기");
         if (fixations.length > 0) {
           animationFrameId.current = requestAnimationFrame(() => {
             // console.log(fixations, ctx, canvasWidth, canvasHeight);
+            console.log("3. draw fixation 호출111");
             drawFixations(fixations, ctx, canvasWidth, canvasHeight);
           });
         } else {
@@ -157,7 +83,8 @@ function GazeVisualization() {
       // console.log("fixations", fixations);
       if (fixations.length > 0) {
         animationFrameId.current = requestAnimationFrame(() => {
-          drawFixations(fixations, ctx, canvasWidth, canvasHeight);
+          console.log("3. draw fixation 호출222");
+          drawFixations(fixations);
         });
       } else {
         // this.blurImage(ctx, canvasWidth, canvasHeight);
@@ -166,12 +93,14 @@ function GazeVisualization() {
         setTimeout(moveToNextCanvas, 2000);
       }
     }
-  };
+  }, [currentPage]);
 
-  const drawFixations = (fixations, ctx, canvasWidth, canvasHeight) => {
+  const drawFixations = (fixations) => {
     // const { fixationsIndex } = this.state;
-    if (fixationsIndex >= fixations.length) {
-      console.log("drawFixations");
+    // console.log("2");
+
+    console.log("!!!!", fixationsIndex);
+    if (fixationsIndex >= fixations?.length) {
       setTimeout(moveToNextCanvas, 3000);
       return;
     }
@@ -186,8 +115,11 @@ function GazeVisualization() {
     let currentRadius = 0;
 
     const drawStep = () => {
+      // console.log("3");
+      console.log("4. drawStep 실행");
       if (step >= steps) {
         if (fixationsIndex > 0) {
+          console.log("draw saccade");
           const prevFixation = fixations[fixationsIndex - 1];
           const prevX = (prevFixation.x / 1080) * canvasWidth;
           const prevY = (prevFixation.y / 2195) * canvasHeight;
@@ -205,14 +137,14 @@ function GazeVisualization() {
         setFixationsIndex(fixationsIndex + 1);
         setTimeout(() => {
           drawCanvas();
-        }, interval);
+        }, 1000);
         // this.setState({ fixationsIndex: fixationsIndex + 1 }, () => {
         //   setTimeout(this.drawCanvas, interval);
         // });
         return;
       }
 
-      ctx.beginPath();
+      // ctx.beginPath();
 
       const progress = step / steps;
       const newX = (x / 1080) * canvasWidth;
@@ -240,12 +172,12 @@ function GazeVisualization() {
     };
 
     drawStep();
+    console.log("5. drawstep 끝남");
   };
-
   const moveToNextCanvas = () => {
     // const { currentPage } = this.state;
     if (currentPage < visualizationData.length - 1) {
-      setCurrentPage(currentPage + 1);
+      setCurrentPage((prevPage) => prevPage + 1);
       setFixationsIndex(0);
       setPreviousCenter(null);
 
@@ -267,6 +199,74 @@ function GazeVisualization() {
       // );
     }
   };
+
+  useEffect(() => {
+    // const { value } = this.props;
+    // const { location } = this.context.router.route;
+    // const hID = location.state?.value;
+    // const { value: hID } = useParams();
+    // console.log("hID", hID);
+
+    const fetchData = async () => {
+      try {
+        const res = await getHistory(value);
+        const leftData = Object.values(res.data.left);
+        const rightData = Object.values(res.data.right);
+        const personalData = Object.values(res.data.personal);
+        const fixKey = res.data.fix_key;
+        const newLeftTOP3 = [];
+        leftData.forEach((item) => {
+          for (const key in item.top3) {
+            if (item.top3.hasOwnProperty(key)) {
+              const [s_num, f_num] = key.split("-");
+              const receivedData = getInfos(s_num, f_num);
+              console.log("receivedData", receivedData);
+              newLeftTOP3.push(receivedData);
+            }
+          }
+        });
+
+        const visualizeData = await getFixKey(fixKey);
+
+        // console.log("visualizeData", visualizeData);
+
+        const imgUrls = await Promise.all(
+          visualizeData.data.map(async (page) => {
+            return await GenerateImgUrl(page.s_num, page.f_num);
+          })
+        );
+
+        setImgUrls(imgUrls);
+        // console.log("12??", imgUrls);
+        setVisualizationData(visualizeData.data);
+        // setLeftTOP3(newLeftTOP3);
+
+        // animationFrameId.current = requestAnimationFrame(() => {
+        //   console.log("2.drawCanvas");
+        //   drawCanvas();
+        // });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+
+    return () => {
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
+    };
+  }, [value]);
+
+  useEffect(() => {
+    // imgUrls 상태가 업데이트될 때마다 drawCanvas 함수를 호출
+    if (imgUrls.length !== 0) {
+      animationFrameId.current = requestAnimationFrame(() => {
+        console.log("drawCanvas");
+        drawCanvas();
+      });
+    }
+  }, [imgUrls]);
 
   // render() {
   return (
@@ -298,11 +298,11 @@ function GazeVisualization() {
               </div>
               <div>
                 <img src={top2} alt="2등" />
-                <p>{leftTOP3[2]}</p>
+                <p>{leftTOP3[1]}</p>
               </div>
               <div>
                 <img src={top3} alt="3등" />
-                <p>{leftTOP3[2]}</p>
+                <p>{leftTOP3[0]}</p>
               </div>
             </section>
             <section className={Style.TOP3_2}>

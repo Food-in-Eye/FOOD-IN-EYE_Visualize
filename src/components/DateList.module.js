@@ -31,7 +31,7 @@ function DateList() {
     <div>
       <div className={DT.inner}>
         <div className={DT.upper}>
-          <span>날짜 리스트</span>
+          <h2>날짜 리스트</h2>
           <p>분석을 보고싶은 메뉴를 선택하세요!</p>
         </div>
         <div className={DT.menus}>

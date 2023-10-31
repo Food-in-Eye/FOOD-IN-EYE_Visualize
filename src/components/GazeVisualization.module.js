@@ -14,7 +14,6 @@ function GazeVisualization() {
   const { value } = location?.state || {};
 
   const [currentPage, setCurrentPage] = useState(-1);
-  const [previousCenter, setPreviousCenter] = useState(null);
   const [imgUrls, setImgUrls] = useState([]);
   const [fixationsIndex, setFixationsIndex] = useState(-1);
   const [leftData, setLeftData] = useState([]);
@@ -32,12 +31,8 @@ function GazeVisualization() {
   const canvasRef = useRef(null);
   const animationFrameId = useRef(null);
 
-  // let ctx, canvasWidth, canvasHeight;
-
   const drawCanvas = useCallback(() => {
-    // const { currentPage, fixationsIndex } = this.state;
     const canvas = canvasRef.current;
-    // const fixations = visualizationData[currentPage]?.fixations;
     const imgSrc = imgUrls[currentPage];
 
     if (!canvas) {
@@ -49,10 +44,6 @@ function GazeVisualization() {
 
     const ctx = canvas.getContext("2d");
 
-    // ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // console.log("visualizationData", visualizationData[currentPage]);
-
-    // console.log("fixations", fixations);
     const screenAspectRatio = 1080 / 2195;
     const canvasWidth = canvas.width;
     const canvasHeight = canvasWidth / screenAspectRatio;
@@ -72,27 +63,9 @@ function GazeVisualization() {
         setTimeout(moveToNextCanvas, 2000);
       }
     };
-
-    // console.log("fixations", fixations);
-    // console.log(fixationsIndex, visualizationData[currentPage].fixations.length);
-    //   if (fixationsIndex < visualizationData[currentPage].fixations.length) {
-    //     setFixationsIndex(0)
-    //     // animationFrameId.current = requestAnimationFrame(() => {
-    //     //   console.log("3. draw fixation 호출222");
-    //     //   drawFixations(fixations);
-    //     // });
-    //   } else {
-    //     // this.blurImage(ctx, canvasWidth, canvasHeight);
-    //     // this.drawNoFixationMessage(ctx);
-    //     console.log("fixations가 없을 때2");
-    //     setTimeout(moveToNextCanvas, 2000);
-    //   }
-    // }
   }, [currentPage]);
 
   const drawFixations = useCallback(() => {
-    // const { fixationsIndex } = this.state;
-    // console.log("2");
     if (fixationsIndex >= visualizationData[currentPage].fixations.length) {
       setTimeout(moveToNextCanvas, 2000);
       return;
@@ -113,9 +86,7 @@ function GazeVisualization() {
         return;
       }
 
-      // ctx.beginPath();
-
-      const progress = step / steps;
+      // const progress = step / steps;
       const newX = (x / 1080) * canvasWidth;
       const newY = (y / 2195) * canvasHeight;
 
@@ -159,28 +130,8 @@ function GazeVisualization() {
   }, [fixationsIndex]);
 
   const moveToNextCanvas = () => {
-    // const { currentPage } = this.state;
     if (currentPage < visualizationData.length - 1) {
       setCurrentPage((prevPage) => prevPage + 1);
-      // setFixationsIndex(0);
-      setPreviousCenter(null);
-
-      // animationFrameId.current = requestAnimationFrame(() => {
-      //   drawCanvas();
-      // });
-
-      // this.setState(
-      //   {
-      //     currentPage: currentPage + 1,
-      //     fixationsIndex: 0,
-      //     previousCenter: null,
-      //   },
-      //   () => {
-      //     this.animationFrameId = requestAnimationFrame(() => {
-      //       this.drawCanvas();
-      //     });
-      //   }
-      // );
     }
   };
 
@@ -252,7 +203,7 @@ function GazeVisualization() {
   // render() {
   return (
     <div className={Style.total}>
-      {/* <section className={Style.menus}>
+      <section className={Style.menus}>
         <div className={Style.simpleDashboard}>
           <h2>&lt; 내가 가장 많이 본 메뉴 &gt;</h2>
           <section className={Style.TOP3_2}>
@@ -303,7 +254,7 @@ function GazeVisualization() {
             </section>
           </div>
         </div>
-      </section> */}
+      </section>
       <section className={Style.visualizeSec}>
         <h2>주문 과정에서의 시선 흐름 과정</h2>
         <div className={Style.canvasDiv}>
@@ -318,10 +269,10 @@ function GazeVisualization() {
           ></canvas>
         </div>
       </section>
-      {/* <section className={Style.receipt}>
+      <section className={Style.receipt}>
         <h2>주문 내역</h2>
         <div className={Style.receiptWhole}>
-          <img src={receipt} alt="주문 내역" />
+          {/* <img src={receipt} alt="주문 내역" /> */}
           <div className={Style.receiptBody}>
             <span>주문 일시: </span>
             <hr />
@@ -338,7 +289,7 @@ function GazeVisualization() {
             </div>
           </div>
         </div>
-      </section> */}
+      </section>
     </div>
   );
 }

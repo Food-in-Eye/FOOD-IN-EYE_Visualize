@@ -205,9 +205,11 @@ function GazeVisualization() {
         });
 
         const visualizeData = await getFixKey(fixKey);
+        console.log("visualizeData", visualizeData);
 
         const imgUrls = await Promise.all(
           visualizeData.data.map(async (page) => {
+            console.log(page.s_num, page.f_num);
             return await GenerateImgUrl(page.s_num, page.f_num);
           })
         );

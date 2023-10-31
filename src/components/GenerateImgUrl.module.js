@@ -1,8 +1,9 @@
-function GenerateImgUrl(s_num, f_num) {
+function GenerateImgUrl(page, s_num, f_num) {
   const s3Url = `https://foodineye2.s3.ap-northeast-2.amazonaws.com/screen_image/`;
   let imgKey = "";
 
   const storeFoodKeys = {
+    cart: ["1cf25e21-5a7d-4b0f-aee5-6be777df14c0.jpg"],
     store0: ["96dc63e5-1dae-4d1b-ad49-d545397fef58.jpg"],
     store1: [
       "2701ddc2-5f5f-4c31-ad31-b4bda646f4e9.jpg",
@@ -52,7 +53,9 @@ function GenerateImgUrl(s_num, f_num) {
     ],
   };
 
-  if (s_num === 0) {
+  if (s_num === -1) {
+    imgKey = storeFoodKeys.cart[0];
+  } else if (s_num === 0) {
     imgKey = storeFoodKeys.store0[0];
   } else if (s_num === 1) {
     /** 하울 */

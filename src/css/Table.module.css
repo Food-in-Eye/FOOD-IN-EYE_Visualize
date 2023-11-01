@@ -1,0 +1,73 @@
+table {
+  border-collapse: collapse;
+  /* width: 100%; */
+  width: 10vw;
+}
+
+th,
+td {
+  white-space: nowrap;
+  padding-bottom: 10px;
+  text-align: center;
+  align-items: center;
+  color: #323232;
+}
+
+th,
+.orderTH {
+  font-family: "Hahmlet-SemiBold";
+  font-size: 40px;
+  font-weight: 600;
+}
+
+td {
+  margin: 0 30px;
+  font-family: "Hahmlet-Regular";
+  font-size: 35px;
+  font-weight: 500;
+}
+
+.menuTD {
+  height: 50px;
+  margin-right: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 15px;
+  white-space: nowrap;
+}
+tfoot {
+  border-top: 1px solid #ddd;
+}
+
+tfoot td {
+  width: 20vw;
+  height: 10px;
+  padding: 30px;
+  font-size: 45px;
+  font-weight: 600;
+}
+
+.orderTimeCell {
+  width: 5%;
+}
+
+.orderMenusCell {
+  width: 5%;
+}
+
+.orderPriceCell {
+  width: 3%;
+}
+
+.orderTable {
+  width: 20vw;
+}
+
+.orderTD {
+  height: 3vw;
+}
+
+.orderTH,
+.orderTD {
+  padding: 30px;
+}

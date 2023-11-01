@@ -4,6 +4,7 @@ import GenerateImgUrl from "./GenerateImgUrl.module";
 import Style from "../css/style.module.css";
 import { getHistory, getFixKey, getInfos } from "./API.module";
 import { useLocation } from "react-router-dom";
+import ReceiptTable from "../components/ReceiptTable.module";
 import top1 from "../images/top1.png";
 import top2 from "../images/top2.png";
 import top3 from "../images/top3.png";
@@ -17,9 +18,12 @@ function GazeVisualization() {
   const [imgUrls, setImgUrls] = useState([]);
   const [fixationsIndex, setFixationsIndex] = useState(-1);
   const [leftData, setLeftData] = useState([]);
-  const [leftTOP3, setLeftTOP3] = useState([]);
-  const [rightData, setRightData] = useState([]);
-  const [rightTOP3, setRightTOP3] = useState([]);
+  const [LOW3key, setLOW3key] = useState([]);
+  const [TOP3key, setTOP3key] = useState([]);
+  const [LOW3Data, setLOW3Data] = useState([]);
+  const [TOP3Data, setTOP3Data] = useState([]);
+  const [receiptDate, setReceiptDate] = useState("");
+  const [receiptData, setReceiptData] = useState([]);
   const [personalData, setPersonalData] = useState([]);
   const [personalTOP3, setPersonalTOP3] = useState([]);
 
@@ -135,24 +139,83 @@ function GazeVisualization() {
     }
   };
 
+  const formatDate = (date) => {
+    const dateObject = new Date(date);
+    const year = dateObject.getFullYear();
+    const month = dateObject.getMonth() + 1; // Month is zero-based, so add 1
+    const day = dateObject.getDate();
+    const hours = dateObject.getHours();
+    const minutes = dateObject.getMinutes();
+    const seconds = dateObject.getSeconds();
+
+    const formattedDate = `${year}-${String(month).padStart(2, "0")}-${String(
+      day
+    ).padStart(2, "0")} ${String(hours).padStart(2, "0")}:${String(
+      seconds
+    ).padStart(2, "0")}`;
+    return formattedDate;
+  };
+
+  const getDataFromKey = async (prevData) => {
+    const newData = [];
+    for (const data of prevData) {
+      const menuNameData = {};
+
+      for (const key in data) {
+        const [s_num, f_num] = key.split("-");
+
+        try {
+          const res = await getInfos(s_num, f_num);
+          console.log("getInfos res", res);
+          const menuName = res.data;
+
+          menuNameData[key] = {
+            ...data[key],
+            menuName,
+          };
+        } catch (error) {
+          console.error(error);
+          menuNameData[key] = { ...data[key] };
+        }
+      }
+      newData.push(menuNameData);
+    }
+    return newData;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await getHistory(value);
+        console.log("res", res);
         const leftData = Object.values(res.data.left);
         const rightData = Object.values(res.data.right);
         const personalData = Object.values(res.data.personal);
         const fixKey = res.data.fix_key;
-        const newLeftTOP3 = [];
-        leftData.forEach((item) => {
-          for (const key in item.top3) {
-            if (item.top3.hasOwnProperty(key)) {
-              const [s_num, f_num] = key.split("-");
-              const receivedData = getInfos(s_num, f_num);
 
-              newLeftTOP3.push(receivedData);
-            }
+        console.log("leftData", leftData);
+        getDataFromKey(leftData).then((value) => {
+          console.log("leftDataWithMenuName", value);
+          if (value.length > 0) {
+            setLOW3Data(value[0]);
+            setTOP3Data(value[1]);
           }
+        });
+        const lowKeysArray = LOW3Data.map((obj) => Object.keys(obj));
+        const topKeysArray = TOP3Data.map((obj) => Object.keys(obj));
+
+        setLOW3key(lowKeysArray);
+        setTOP3key(topKeysArray);
+
+        // console.log("leftDataWithMenuName", leftDataWithMenuName);
+
+        const newDate = formatDate(rightData[0]);
+        setReceiptDate(newDate);
+        setReceiptData(rightData[1]);
+
+        getDataFromKey(personalData).then((value) => {
+          console.log("personal value", value);
+          setPersonalTOP3(value);
         });
 
         const visualizeData = await getFixKey(fixKey);
@@ -200,59 +263,61 @@ function GazeVisualization() {
     }
   }, [fixationsIndex, drawFixations]);
 
+  console.log(LOW3key, TOP3key);
+
   // render() {
   return (
     <div className={Style.total}>
       <section className={Style.menus}>
         <div className={Style.simpleDashboard}>
-          <h2>&lt; 내가 가장 많이 본 메뉴 &gt;</h2>
+          {/* <h2>&lt; 내가 가장 많이 본 메뉴 &gt;</h2>
           <section className={Style.TOP3_2}>
             <div>
               <img src={top1} alt="1등" />
-              <p>1</p>
+              <p>{personalTOP3[0]}</p>
             </div>
             <div>
               <img src={top2} alt="2등" />
-              <p>1</p>
+              <p>{personalTOP3[1]}</p>
             </div>
             <div>
               <img src={top3} alt="3등" />
-              <p>1</p>
+              <p>{personalTOP3[2]}</p>
             </div>
-          </section>
-          <div className={Style.menusTOP3}>
+          </section> */}
+          {/* <div className={Style.menusTOP3}>
             <h2>&lt;오늘 사람들이 본 메뉴 중 &gt;</h2>
             <section className={Style.TOP3_1}>
               <h3>많이 봤는데 판매량이 적은 메뉴 TOP3</h3>
               <div>
                 <img src={top1} alt="1등" />
-                <p>{leftTOP3[2]}</p>
+                <p>{TOP3Data[2]["menuName"]}</p>
               </div>
               <div>
                 <img src={top2} alt="2등" />
-                <p>{leftTOP3[1]}</p>
+                <p>{TOP3Data[1]["menuName"]}</p>
               </div>
               <div>
                 <img src={top3} alt="3등" />
-                <p>{leftTOP3[0]}</p>
+                <p>{TOP3Data[0]["menuName"]}</p>
               </div>
             </section>
             <section className={Style.TOP3_2}>
               <h3>적게 봤는데 판매량이 많은 메뉴 TOP3</h3>
               <div>
                 <img src={top1} alt="1등" />
-                <p>1</p>
+                <p>{LOW3Data[0]["menuName"]}</p>
               </div>
               <div>
                 <img src={top2} alt="2등" />
-                <p>1</p>
+                <p>{LOW3Data[1]["menuName"]}</p>
               </div>
               <div>
                 <img src={top3} alt="3등" />
-                <p>1</p>
+                <p>{LOW3Data[2]["menuName"]}</p>
               </div>
             </section>
-          </div>
+          </div> */}
         </div>
       </section>
       <section className={Style.visualizeSec}>
@@ -274,18 +339,28 @@ function GazeVisualization() {
         <div className={Style.receiptWhole}>
           {/* <img src={receipt} alt="주문 내역" /> */}
           <div className={Style.receiptBody}>
-            <span>주문 일시: </span>
+            <span>주문 일시: {receiptDate}</span>
             <hr />
             <div className={Style.receiptInfo}>
-              <section>
-                <span>상품명 </span>
-              </section>
-              <section>
-                <span>수량 </span>
-              </section>
-              <section>
-                <span>가격 </span>
-              </section>
+              <ReceiptTable data={receiptData} />
+              {/* <ul>
+                {receiptData.map((foodItem, index) => (
+                  <li key={index}>
+                    <section>
+                      <span>가게명 {foodItem.s_name}</span>
+                    </section>
+                    <section>
+                      <span>상품명 {foodItem.f_name}</span>
+                    </section>
+                    <section>
+                      <span>수량 {foodItem.count}</span>
+                    </section>
+                    <section>
+                      <span>가격 {foodItem.price}</span>
+                    </section>
+                  </li>
+                ))}
+              </ul> */}
             </div>
           </div>
         </div>

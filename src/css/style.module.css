@@ -111,7 +111,9 @@
 }
 
 .receiptBody span:first-child {
-  margin-left: 3vw;
+  font-size: 40px;
+  margin-left: 0;
+  margin-right: auto;
 }
 
 .receiptInfo {
@@ -126,5 +128,5 @@
 }
 
 hr {
-  width: 15vw;
+  width: 20vw;
 }

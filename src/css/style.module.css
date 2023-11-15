@@ -1,0 +1,132 @@
+* {
+  margin: 0 auto;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+.total {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 5vw;
+}
+
+.visualizeSec {
+  display: flex;
+  flex-direction: column;
+}
+
+.total h2 {
+  font-family: "NotoSansKR-SemiBold";
+  font-size: 50px;
+  text-align: center;
+}
+
+.total span {
+  font-family: "NotoSansKR-SemiBold";
+  font-size: 40px;
+  text-align: center;
+}
+
+.canvasDiv {
+  display: flex;
+  /* flex-direction: column; */
+  justify-content: center;
+}
+
+.simpleDashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 20vw;
+  height: 30vw;
+}
+
+.simpleDashboard h3 {
+  font-family: "NotoSansKR-Bold";
+  font-size: 45px;
+  text-align: left;
+}
+
+.TOP3_1,
+.TOP3_2 {
+  display: flex;
+  flex-direction: column;
+  margin: 1vw 0;
+  padding: 1vw;
+  border: 3px solid #d9d9d9;
+}
+
+.TOP3_1 div,
+.TOP3_2 div {
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 1vw;
+  margin-left: 0px;
+  margin-right: auto;
+}
+
+.TOP3_1 div img,
+.TOP3_2 div img {
+  width: 1.5vw;
+  height: auto;
+}
+
+.TOP3_1 div p,
+.TOP3_2 div p {
+  margin: auto 0;
+  padding: 0 1vw;
+  font-family: "NotoSansKR-Regular";
+  font-size: 40px;
+}
+
+.menusTOP3 {
+  margin-top: 5vw;
+}
+
+.receiptWhole {
+  display: inline-block;
+  position: relative;
+  width: 20vw;
+  height: 30vw;
+}
+
+.receiptWhole img {
+  display: block;
+  width: 100%;
+}
+
+.receiptBody {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+}
+
+.receiptBody span {
+  margin-left: 0;
+  margin-right: auto;
+  white-space: nowrap;
+}
+
+.receiptBody span:first-child {
+  font-size: 40px;
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.receiptInfo {
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.receiptInfo section {
+  margin-left: 0;
+  margin-right: auto;
+  padding: 1vw;
+}
+
+hr {
+  width: 20vw;
+}
